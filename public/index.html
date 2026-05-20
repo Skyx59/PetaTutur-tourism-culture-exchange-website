@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Tutur - Heritage Tourism</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <h1>Peta Tutur</h1>
+        <p>Spatial-Temporal Cultural Optimizer</p>
+    </header>
+
+    <main class="container">
+        <aside class="sidebar">
+            <section class="forms">
+                <h2>Plan Your Itinerary</h2>
+                <form id="itinerary-form">
+                    <label for="start-point">Starting Point:</label>
+                    <input type="text" id="start-point" placeholder="e.g., Hotel" required>
+                    
+                    <label for="time-budget">Time Budget (Hours):</label>
+                    <input type="number" id="time-budget" placeholder="e.g., 4" required min="1">
+                    
+                    <button type="submit">Optimize Route</button>
+                </form>
+            </section>
+
+            <section class="timeline">
+                <h2>Dynamic Timeline</h2>
+                <div id="timeline-container">
+                    <p class="placeholder-text">Your generated itinerary will appear here.</p>
+                </div>
+            </section>
+        </aside>
+
+        <section class="map-view">
+            <div id="map-container">
+                <span class="placeholder-text">Interactive Map Container Placeholder</span>
+            </div>
+        </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+</body>
+</html>
