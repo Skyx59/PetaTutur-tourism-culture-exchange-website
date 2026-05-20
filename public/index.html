@@ -3,45 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta Tutur - Heritage Tourism</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Peta Tutur | Cultural Heritage Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Peta Tutur</h1>
-        <p>Spatial-Temporal Cultural Optimizer</p>
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Peta Tutur</h1>
+            <p>Spatial-Temporal Cultural Optimizer. Discover the hidden heritage of Indonesia through curated folklore journeys.</p>
+        </div>
     </header>
 
     <main class="container">
-        <aside class="sidebar">
-            <section class="forms">
-                <h2>Plan Your Itinerary</h2>
-                <form id="itinerary-form">
-                    <label for="start-point">Starting Point:</label>
-                    <input type="text" id="start-point" placeholder="e.g., Hotel" required>
-                    
-                    <label for="time-budget">Time Budget (Hours):</label>
-                    <input type="number" id="time-budget" placeholder="e.g., 4" required min="1">
-                    
-                    <button type="submit">Optimize Route</button>
-                </form>
-            </section>
-
-            <section class="timeline">
-                <h2>Dynamic Timeline</h2>
-                <div id="timeline-container">
-                    <p class="placeholder-text">Your generated itinerary will appear here.</p>
+        <section class="control-panel glassmorphism">
+            <h2>Plan Your Journey</h2>
+            <form id="itinerary-form">
+                <div class="form-group">
+                    <label for="start-location">Starting Location</label>
+                    <input type="text" id="start-location" name="start-location" placeholder="e.g., Yogyakarta" required>
                 </div>
-            </section>
-        </aside>
+                <div class="form-group">
+                    <label for="time-avail">Time Availability (Hours)</label>
+                    <input type="number" id="time-avail" name="time-avail" min="1" max="72" placeholder="e.g., 6" required>
+                </div>
+                <button type="submit" class="btn-primary">Generate Itinerary</button>
+            </form>
+        </section>
 
-        <section class="map-view">
-            <div id="map-container">
-                <span class="placeholder-text">Interactive Map Container Placeholder</span>
+        <section class="dashboard">
+            <div class="map-container glassmorphism" id="map-view">
+                <div class="map-placeholder">
+                    <p>Interactive Map View</p>
+                    <span>(Routing API Placeholder)</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="timeline-container glassmorphism" id="timeline">
+                    <h3>Your Itinerary</h3>
+                    <div class="timeline-nodes" id="timeline-nodes">
+                        <p class="empty-state">Enter your details to generate a cultural journey.</p>
+                    </div>
+                </div>
+
+                <div class="narrative-card glassmorphism" id="narrative-card">
+                    <h3>Cultural Narrative</h3>
+                    <div id="narrative-content">
+                        <p class="empty-state">Select a destination from your timeline to unveil its folklore.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <script src="/app.js" type="module"></script>
+    <script src="app.js"></script>
 </body>
 </html>
