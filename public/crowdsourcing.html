@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowdsourcing | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section style="padding: 3rem 0;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Portal Urun Daya (Crowdsourcing)</h1>
+            <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem;">Kontribusi narasi, lokasi, dan budaya lokal untuk pelestarian warisan nusantara.</p>
+            
+            <div id="provider-only-content" style="display: none;">
+                <div class="profile-main" style="max-width: 800px; margin: 0 auto;">
+                    <form id="crowdsourcingForm" class="auth-form">
+                        <div class="form-group">
+                            <label>Nama Destinasi / Budaya</label>
+                            <input type="text" id="locationName" required placeholder="Contoh: Tari Jaipong, Kawah Putih">
+                        </div>
+                        <div class="form-group">
+                            <label>Wilayah</label>
+                            <select id="region" style="padding: 0.9rem; border: 1px solid #CCC; border-radius: 8px;">
+                                <option value="DKI Jakarta">DKI Jakarta</option>
+                                <option value="Jawa Barat">Jawa Barat</option>
+                                <option value="DI Yogyakarta">DI Yogyakarta</option>
+                                <option value="Bali">Bali</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi & Sejarah Tutur</label>
+                            <textarea id="description" rows="5" required style="padding: 0.9rem; border: 1px solid #CCC; border-radius: 8px; font-family: inherit;"></textarea>
+                        </div>
+                        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Latitude</label>
+                                <input type="number" step="any" id="lat" required placeholder="-6.1234">
+                            </div>
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input type="number" step="any" id="lng" required placeholder="106.1234">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Dokumen Foto / Media</label>
+                            <input type="file" id="media" accept="image/*,audio/*">
+                        </div>
+                        <button type="submit" class="btn-cta" style="width: 100%; margin-top: 1rem;">Kirim Kontribusi</button>
+                        <p style="font-size: 0.85rem; opacity: 0.6; text-align: center;">*Data akan divalidasi oleh Superadmin sebelum ditampilkan publik.</p>
+                    </form>
+                </div>
+
+                <div style="margin-top: 4rem;">
+                    <h3>Riwayat Kontribusi Anda</h3>
+                    <div id="contributionList" class="itinerary-list" style="margin-top: 1rem;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="tourist-warning" style="display: none; text-align: center; padding: 4rem;">
+                <h2 style="color: var(--accent-green);">Akses Terbatas</h2>
+                <p>Fitur Crowdsourcing hanya tersedia untuk akun <strong>Penyedia Jasa</strong>.</p>
+                <button class="btn-cta" style="margin-top: 2rem;" onclick="window.location.href='dashboard.html'">Kembali ke Home</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('pt_user'));
+            if (!user) return window.location.href = 'index.html';
+
+            if (user.role === 'Penyedia Jasa') {
+                document.getElementById('provider-only-content').style.display = 'block';
+                loadContributions(user.id);
+            } else {
+                document.getElementById('tourist-warning').style.display = 'block';
+            }
+        });
+
+        async function loadContributions(userId) {
+            try {
+                const response = await fetch(`/api/admin/narratives?providerId=${userId}`);
+                const data = await response.json();
+                const list = document.getElementById('contributionList');
+                list.innerHTML = '';
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<p style="opacity: 0.5;">Belum ada kontribusi.</p>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'itinerary-item';
+                    const statusClass = item.approval_status === 'approved' ? 'completed' : '';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <strong>${item.location_name}</strong>
+                                <p style="font-size: 0.9rem;">${item.description.substring(0, 100)}...</p>
+                            </div>
+                            <span class="badge ${statusClass}">${item.approval_status.toUpperCase()}</span>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading contributions:', error);
+            }
+        }
+
+        document.getElementById('crowdsourcingForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('pt_user'));
+            
+            const formData = {
+                provider_id: user.id,
+                location_name: document.getElementById('locationName').value,
+                region: document.getElementById('region').value,
+                description: document.getElementById('description').value,
+                latitude: document.getElementById('lat').value,
+                longitude: document.getElementById('lng').value
+            };
+
+            try {
+                const response = await fetch('/api/catalog/contribute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Kontribusi berhasil dikirim dan menunggu validasi!');
+                    window.location.reload();
+                } else {
+                    alert('Gagal mengirim kontribusi.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi.');
+            }
+        });
+    </script>
+</body>
+</html>

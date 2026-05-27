@@ -72,4 +72,37 @@ router.post('/save', async (req, res) => {
     }
 });
 
+// POST /api/itinerary/validate-location
+router.post('/validate-location', async (req, res) => {
+    const { userId, lat, lng } = req.body;
+    try {
+        // Find if user is near any cultural location (within ~500m)
+        const [locations] = await db.execute('SELECT * FROM locations');
+        
+        let found = false;
+        for (const loc of locations) {
+            const dist = Math.sqrt(Math.pow(loc.latitude - lat, 2) + Math.pow(loc.longitude - lng, 2));
+            if (dist < 0.005) { // Roughly 500m
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            // Update user points in DB
+            const [users] = await db.execute('SELECT specific_data FROM users WHERE id = ?', [userId]);
+            let data = users[0].specific_data || {};
+            data.points = (data.points || 0) + 20;
+            
+            await db.execute('UPDATE users SET specific_data = ? WHERE id = ?', [JSON.stringify(data), userId]);
+            res.json({ success: true, message: 'Lokasi tervalidasi!' });
+        } else {
+            res.json({ success: false, message: 'Anda tidak berada di lokasi budaya.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error validating location' });
+    }
+});
+
 export default router;

@@ -42,4 +42,19 @@ router.get('/:region/narratives', async (req, res) => {
     }
 });
 
+// POST /api/catalog/contribute
+router.post('/contribute', async (req, res) => {
+    const { provider_id, location_name, description, latitude, longitude, region } = req.body;
+    try {
+        await db.execute(
+            'INSERT INTO narratives (provider_id, location_name, description, approval_status) VALUES (?, ?, ?, ?)',
+            [provider_id, location_name, description, 'pending']
+        );
+        res.status(201).json({ message: 'Kontribusi berhasil dikirim' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Gagal mengirim kontribusi' });
+    }
+});
+
 export default router;

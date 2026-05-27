@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reputation | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section style="padding: 3rem 0;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Sistem Reputasi Penjelajah</h1>
+            <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem;">Metrik pencapaian eksplorasi dan koleksi narasi budaya Anda.</p>
+            
+            <div id="tourist-only-content" style="display: none;">
+                <div class="features" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 3rem;">
+                    <div class="feature-card">
+                        <h3 style="color: var(--accent-green);">Poin Reputasi</h3>
+                        <p style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;" id="repPoints">0</p>
+                        <p>Kumpulkan poin dengan memvalidasi kunjungan fisik ke lokasi budaya.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3 style="color: var(--accent-green);">Lencana Penjelajah</h3>
+                        <div id="badgeContainer" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                            <span class="badge" title="Mulai eksplorasi pertama Anda">Newbie</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Validasi Kunjungan & Buka Narasi Eksklusif</h3>
+                <div class="profile-main" style="margin-top: 1.5rem;">
+                    <p style="margin-bottom: 1.5rem;">Gunakan GPS untuk memvalidasi keberadaan Anda di titik lokasi dan membuka rekaman tutur audio orisinal.</p>
+                    <button id="validateBtn" class="btn-cta" style="width: 100%;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Cek Lokasi (GPS)
+                    </button>
+                    <p id="statusMsg" style="margin-top: 1rem; text-align: center; font-weight: 600;"></p>
+                </div>
+
+                <div style="margin-top: 4rem;">
+                    <h3>Koleksi Narasi Budaya (Unlocked)</h3>
+                    <div id="unlockedNarratives" class="itinerary-list" style="margin-top: 1rem;">
+                        <!-- Populated by JS -->
+                        <p style="opacity: 0.5;">Belum ada narasi yang dibuka. Kunjungi lokasi untuk membuka narasi!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="provider-warning" style="display: none; text-align: center; padding: 4rem;">
+                <h2 style="color: var(--accent-green);">Akses Terbatas</h2>
+                <p>Fitur Reputasi hanya tersedia untuk akun <strong>Turis</strong>.</p>
+                <button class="btn-cta" style="margin-top: 2rem;" onclick="window.location.href='dashboard.html'">Kembali ke Home</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('pt_user'));
+            if (!user) return window.location.href = 'index.html';
+
+            if (user.role === 'Turis') {
+                document.getElementById('tourist-only-content').style.display = 'block';
+                updateRepDisplay(user);
+            } else {
+                document.getElementById('provider-warning').style.display = 'block';
+            }
+        });
+
+        function updateRepDisplay(user) {
+            const points = user.specific_data?.points || 0;
+            document.getElementById('repPoints').textContent = points;
+            
+            const badgeContainer = document.getElementById('badgeContainer');
+            if (points >= 100) {
+                const b = document.createElement('span');
+                b.className = 'badge completed';
+                b.textContent = 'Cultural Guardian';
+                badgeContainer.appendChild(b);
+            }
+        }
+
+        document.getElementById('validateBtn')?.addEventListener('click', () => {
+            const status = document.getElementById('statusMsg');
+            status.textContent = "Mencoba mengakses lokasi...";
+            status.style.color = "var(--text-primary)";
+
+            if (!navigator.geolocation) {
+                status.textContent = "Geolocation tidak didukung browser Anda.";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                status.textContent = `Lokasi ditemukan: ${lat.toFixed(4)}, ${lng.toFixed(4)}. Memvalidasi dengan database...`;
+
+                try {
+                    // Simulation of proximity check
+                    const response = await fetch('/api/itinerary/validate-location', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: JSON.parse(localStorage.getItem('pt_user')).id,
+                            lat,
+                            lng
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        status.textContent = "Berhasil! Anda berada di lokasi. Poin +20 & Narasi Baru Dibuka!";
+                        status.style.color = "var(--accent-green)";
+                        // Update local storage
+                        const user = JSON.parse(localStorage.getItem('pt_user'));
+                        user.specific_data = user.specific_data || {};
+                        user.specific_data.points = (user.specific_data.points || 0) + 20;
+                        localStorage.setItem('pt_user', JSON.stringify(user));
+                        updateRepDisplay(user);
+                    } else {
+                        status.textContent = "Gagal: Anda tidak berada di titik koordinat budaya mana pun.";
+                        status.style.color = "red";
+                    }
+                } catch (error) {
+                    console.error(error);
+                    status.textContent = "Terjadi kesalahan saat validasi.";
+                }
+            }, () => {
+                status.textContent = "Gagal mendapatkan lokasi. Pastikan GPS aktif.";
+                status.style.color = "red";
+            });
+        });
+    </script>
+</body>
+</html>
