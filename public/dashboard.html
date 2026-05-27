@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="#" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="#">Create New</a>
+                        <a href="#">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="#" class="nav-item">Crowdsourcing</a>
+                <a href="#" class="nav-item">Reputation</a>
+                
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section style="padding: 3rem 0;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Welcome to Peta Tutur</h1>
+            <p style="font-size: 1.1rem; opacity: 0.8;">Explore and preserve cultural heritage with our community.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="text-align: left;">
+                    <h3>Your Next Journey</h3>
+                    <p>Start planning your cultural exchange trip using our Workspace tools.</p>
+                    <button class="btn-cta" style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; font-size: 0.9rem;">Start Planning</button>
+                </div>
+                <div class="feature-card" style="text-align: left;">
+                    <h3>Community Insights</h3>
+                    <p>Check the latest crowdsourced data on local traditions and festivals.</p>
+                    <button class="btn-cta" style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; font-size: 0.9rem; background: var(--text-primary);">View Insights</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

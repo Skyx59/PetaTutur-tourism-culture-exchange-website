@@ -1,94 +1,128 @@
+/**
+ * Peta Tutur - Frontend Logic
+ * Strictly Vanilla JS
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('itinerary-form');
-    const timelineContainer = document.getElementById('timeline-nodes');
-    const narrativeContent = document.getElementById('narrative-content');
+    initAuthModal();
+    initProfileData();
+    initLogout();
+});
 
-    // Mock data for our hidden heritage itinerary
-    const mockNodes = [
-        {
-            id: 1,
-            time: "09:00 AM",
-            title: "Candi Sambisari",
-            type: "Underground Temple",
-            description: "Unearthed by a farmer in 1966, this 9th-century Hindu temple was buried under five meters of volcanic ash from Mount Merapi. Local folklore often whispers about the protective spirits of the earth that kept it hidden until the time was right for its rediscovery."
-        },
-        {
-            id: 2,
-            time: "11:30 AM",
-            title: "Plengkung Gading",
-            type: "Historical Gate",
-            description: "The southern gate of the Yogyakarta Kraton. Legend dictates that the reigning Sultan is strictly forbidden from passing through this specific gate during his lifetime, an ancient taboo linked to the passage of the dead and the spiritual balance of the kingdom."
-        },
-        {
-            id: 3,
-            time: "02:00 PM",
-            title: "Taman Sari Water Castle",
-            type: "Royal Garden",
-            description: "A former royal garden of the Sultanate of Yogyakarta. Beyond its beautiful pools lies a network of secret underground tunnels and a subterranean mosque. Myths speak of the Sultan's encounters with Nyi Roro Kidul, the mythical Queen of the Southern Sea, within these watery depths."
-        },
-        {
-            id: 4,
-            time: "04:30 PM",
-            title: "Kotagede Historic District",
-            type: "Ancient Capital",
-            description: "The remains of the first capital of the Mataram Sultanate. Wander through narrow alleyways and discover the sacred Royal Cemetery. The atmosphere is thick with tales of Panembahan Senopati, the founder of the empire, and his mystical meditations."
+/**
+ * Auth Modal Logic (index.html)
+ */
+function initAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (!modal) return;
+
+    const openLogin = document.getElementById('openLogin');
+    const openRegister = document.getElementById('openRegister');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const nameGroup = document.getElementById('nameGroup');
+    const authMode = document.getElementById('authMode');
+    
+    const tabTuris = document.getElementById('tabTuris');
+    const tabPenyedia = document.getElementById('tabPenyedia');
+    const agencyGroup = document.getElementById('agencyGroup');
+    const userRole = document.getElementById('userRole');
+
+    const switchMode = (mode) => {
+        if (mode === 'login') {
+            modalTitle.textContent = 'Masuk Ke Akun';
+            submitBtn.textContent = 'Masuk Sekarang';
+            nameGroup.style.display = 'none';
+            authMode.value = 'login';
+        } else {
+            modalTitle.textContent = 'Daftar Akun';
+            submitBtn.textContent = 'Daftar Sekarang';
+            nameGroup.style.display = 'flex';
+            authMode.value = 'register';
         }
-    ];
+    };
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Simulate loading state
-        timelineContainer.innerHTML = '<p class="empty-state">Generating cultural journey...</p>';
-        narrativeContent.innerHTML = '<p class="empty-state">Waiting for selection...</p>';
-
-        setTimeout(() => {
-            generateTimeline(mockNodes);
-        }, 800); // Fake API delay
+    openLogin?.addEventListener('click', () => {
+        switchMode('login');
+        modal.showModal();
     });
 
-    function generateTimeline(nodes) {
-        timelineContainer.innerHTML = ''; // Clear previous
-        
-        nodes.forEach((node, index) => {
-            const nodeEl = document.createElement('div');
-            nodeEl.className = 'timeline-node';
-            nodeEl.innerHTML = `
-                <h4>${node.title}</h4>
-                <span>${node.time}</span>
-            `;
-            
-            nodeEl.addEventListener('click', () => {
-                // Update active state
-                document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
-                nodeEl.classList.add('active');
-                
-                // Show narrative
-                displayNarrative(node);
-            });
+    openRegister?.addEventListener('click', () => {
+        switchMode('register');
+        modal.showModal();
+    });
 
-            timelineContainer.appendChild(nodeEl);
-            
-            // Auto-select the first node
-            if (index === 0) {
-                nodeEl.click();
-            }
-        });
+    // Tab Switching
+    tabTuris?.addEventListener('click', () => {
+        tabTuris.classList.add('active');
+        tabPenyedia.classList.remove('active');
+        agencyGroup.style.display = 'none';
+        userRole.value = 'Konsumen';
+    });
+
+    tabPenyedia?.addEventListener('click', () => {
+        tabPenyedia.classList.add('active');
+        tabTuris.classList.remove('active');
+        agencyGroup.style.display = 'flex';
+        userRole.value = 'Produsen';
+    });
+
+    // Form Submission (Mock)
+    document.getElementById('authForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const userData = {
+            name: document.getElementById('userName').value || 'Guest User',
+            email: document.getElementById('userEmail').value,
+            role: userRole.value,
+            agency: document.getElementById('userAgency').value || null
+        };
+
+        // If Login mode and default admin
+        if (authMode.value === 'login' && userData.email === 'admin@petatutur.com') {
+            userData.name = 'Super Admin';
+            userData.role = 'Superadmin';
+        }
+
+        localStorage.setItem('pt_user', JSON.stringify(userData));
+        alert(authMode.value === 'login' ? 'Login Successful!' : 'Registration Successful!');
+        window.location.href = 'dashboard.html';
+    });
+}
+
+/**
+ * Profile Population Logic (profile.html)
+ */
+function initProfileData() {
+    const profileName = document.getElementById('profile-name');
+    if (!profileName) return;
+
+    const user = JSON.parse(localStorage.getItem('pt_user'));
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
     }
 
-    function displayNarrative(node) {
-        // Fade out effect
-        narrativeContent.style.opacity = '0';
-        
-        setTimeout(() => {
-            narrativeContent.innerHTML = `
-                <h4 class="narrative-title">${node.title}</h4>
-                <div class="narrative-meta">${node.type} • ${node.time}</div>
-                <p class="narrative-text">${node.description}</p>
-            `;
-            // Fade in effect
-            narrativeContent.style.transition = 'opacity 0.3s ease';
-            narrativeContent.style.opacity = '1';
-        }, 150); // slight delay for smooth transition
+    document.getElementById('profile-name').textContent = user.name;
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-role').textContent = user.role;
+    
+    if (user.role === 'Produsen' && user.agency) {
+        const agencyRow = document.getElementById('agencyRow');
+        const profileAgency = document.getElementById('profile-agency');
+        if (agencyRow && profileAgency) {
+            agencyRow.style.display = 'flex';
+            profileAgency.textContent = user.agency;
+        }
     }
-});
+}
+
+/**
+ * Logout Logic
+ */
+function initLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn?.addEventListener('click', (e) => {
+        localStorage.removeItem('pt_user');
+    });
+}

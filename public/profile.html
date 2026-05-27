@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="#" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="#">Create New</a>
+                        <a href="#">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="#" class="nav-item">Crowdsourcing</a>
+                <a href="#" class="nav-item">Reputation</a>
+                
+                <a href="profile.html" class="nav-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="profile-wrapper">
+            <aside class="profile-sidebar">
+                <a href="#" class="sidebar-link active">Credential Info</a>
+                <a href="#" class="sidebar-link">Travel Log</a>
+                <a href="#" class="sidebar-link">Access Management</a>
+                <a href="index.html" class="sidebar-link" id="logoutBtn" style="color: #dc3545; margin-top: 2rem;">Logout</a>
+            </aside>
+
+            <section class="profile-main">
+                <h2 style="margin-bottom: 2rem; font-size: 2rem;">User Profile</h2>
+                
+                <div class="profile-row">
+                    <div class="profile-label">Full Name</div>
+                    <div class="profile-value" id="profile-name">Loading...</div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-label">Email Address</div>
+                    <div class="profile-value" id="profile-email">Loading...</div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-label">User Role</div>
+                    <div class="profile-value" id="profile-role">Loading...</div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-label">Account Status</div>
+                    <div class="profile-value" id="profile-status" style="color: #28a745;">Active</div>
+                </div>
+                <div id="agencyRow" class="profile-row" style="display: none;">
+                    <div class="profile-label">Agency Name</div>
+                    <div class="profile-value" id="profile-agency">-</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
