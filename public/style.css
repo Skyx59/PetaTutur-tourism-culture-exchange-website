@@ -687,6 +687,10 @@ dialog::backdrop {
     grid-template-columns: 360px minmax(0, 1fr);
 }
 
+.single-approval {
+    grid-template-columns: minmax(0, 720px);
+}
+
 .section-heading {
     display: flex;
     justify-content: space-between;
@@ -760,6 +764,25 @@ dialog::backdrop {
 
 .btn-danger:hover {
     background: #9F3838;
+}
+
+.btn-detail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-light);
+    color: var(--accent-green);
+    border: 1px solid rgba(45, 90, 63, 0.25);
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-detail:hover {
+    background: var(--accent-green);
+    color: var(--white);
 }
 
 .role-pill,

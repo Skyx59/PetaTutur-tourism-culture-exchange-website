@@ -40,7 +40,7 @@
             <div>
                 <span class="role-pill">Superadmin Console</span>
                 <h1>Kurasi Registrasi Peta Tutur</h1>
-                <p>Kelola akses Turis dan Penyedia Jasa sebelum mereka masuk ke ekosistem Peta Tutur.</p>
+                <p>Kelola verifikasi Penyedia Jasa sebelum mereka masuk ke ekosistem Peta Tutur.</p>
             </div>
             <div class="admin-actions">
                 <a href="crowdsourcing.html" class="admin-action-link admin-action-primary">Crowdsourcing</a>
@@ -49,10 +49,6 @@
         </section>
 
         <section class="stat-grid">
-            <article class="stat-card">
-                <span>Pending Turis</span>
-                <strong id="pendingTurisStat">0</strong>
-            </article>
             <article class="stat-card">
                 <span>Pending Penyedia</span>
                 <strong id="pendingPenyediaStat">0</strong>
@@ -67,17 +63,7 @@
             </article>
         </section>
 
-        <section id="approvalRoot" class="approval-grid">
-            <div>
-                <div class="section-heading">
-                    <span class="role-pill">Turis</span>
-                    <h2>Registrasi Turis</h2>
-                </div>
-                <div id="pendingTurisList" class="approval-list">
-                    <div class="empty-state">Memuat data...</div>
-                </div>
-            </div>
-
+        <section id="approvalRoot" class="approval-grid single-approval">
             <div>
                 <div class="section-heading">
                     <span class="role-pill">Penyedia Jasa</span>

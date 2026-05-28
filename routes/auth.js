@@ -23,18 +23,18 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Role registrasi tidak valid.' });
         }
 
-        // Status is 'pending' for all new registrations (Superadmin is seeded separately)
-        const status = 'pending';
+        const status = role === 'Turis' ? 'approved' : 'pending';
         
         const [result] = await db.execute(
             'INSERT INTO users (name, email, password, role, status, specific_data) VALUES (?, ?, ?, ?, ?, ?)',
             [name, email, password, role, status, JSON.stringify(specific_data || {})]
         );
         
-        res.status(201).json({
-            message: 'Registrasi berhasil. Akun menunggu persetujuan Superadmin.',
-            userId: result.insertId
-        });
+        const message = role === 'Turis'
+            ? 'Registrasi berhasil. Silakan masuk menggunakan akun Anda.'
+            : 'Registrasi berhasil. Akun penyedia jasa menunggu persetujuan Superadmin.';
+
+        res.status(201).json({ message, userId: result.insertId });
     } catch (error) {
         console.error('Registration error:', error);
         if (error.code === 'ER_DUP_ENTRY') {
@@ -64,8 +64,13 @@ router.post('/login', async (req, res) => {
             return res.status(403).json({ message: 'Superadmin masuk melalui Gerbang Tutur khusus.' });
         }
         
+        if (user.role === 'Turis' && user.status === 'pending') {
+            await db.execute('UPDATE users SET status = "approved" WHERE id = ?', [user.id]);
+            user.status = 'approved';
+        }
+
         if (user.status === 'pending') {
-            return res.status(403).json({ message: 'Akun menunggu persetujuan Superadmin.' });
+            return res.status(403).json({ message: 'Akun penyedia jasa menunggu persetujuan Superadmin.' });
         }
         
         res.status(200).json({

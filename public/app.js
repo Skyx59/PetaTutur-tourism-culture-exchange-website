@@ -433,11 +433,9 @@ async function loadSuperadminPanel() {
             apiFetch('/api/admin/pending-users')
         ]);
 
-        setText('pendingTurisStat', stats.pendingTuris);
         setText('pendingPenyediaStat', stats.pendingPenyedia);
         setText('approvedTurisStat', stats.approvedTuris);
         setText('approvedPenyediaStat', stats.approvedPenyedia);
-        renderApprovalGroup('pendingTurisList', users.filter(user => user.role === 'Turis'), 'Turis');
         renderApprovalGroup('pendingPenyediaList', users.filter(user => user.role === 'Penyedia Jasa'), 'Penyedia Jasa');
     } catch (error) {
         const root = document.getElementById('approvalRoot');

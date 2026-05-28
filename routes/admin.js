@@ -29,7 +29,7 @@ const isSuperadmin = (req, res, next) => {
 router.get('/pending-users', isSuperadmin, async (req, res) => {
     try {
         const [rows] = await db.execute(
-            'SELECT id, name, email, role, status, specific_data, created_at FROM users WHERE status = "pending" AND role IN ("Turis", "Penyedia Jasa") ORDER BY created_at ASC'
+            'SELECT id, name, email, role, status, specific_data, created_at FROM users WHERE status = "pending" AND role = "Penyedia Jasa" ORDER BY created_at ASC'
         );
 
         res.json(rows.map(user => ({
@@ -62,19 +62,19 @@ router.get('/users', isSuperadmin, async (req, res) => {
 // GET /api/admin/stats
 router.get('/stats', isSuperadmin, async (req, res) => {
     try {
+        await db.execute('UPDATE users SET status = "approved" WHERE role = "Turis" AND status = "pending"');
+
         const [rows] = await db.execute(
             'SELECT role, status, COUNT(*) AS total FROM users WHERE role IN ("Turis", "Penyedia Jasa") GROUP BY role, status'
         );
 
         const stats = {
-            pendingTuris: 0,
             pendingPenyedia: 0,
             approvedTuris: 0,
             approvedPenyedia: 0
         };
 
         rows.forEach(row => {
-            if (row.role === 'Turis' && row.status === 'pending') stats.pendingTuris = row.total;
             if (row.role === 'Penyedia Jasa' && row.status === 'pending') stats.pendingPenyedia = row.total;
             if (row.role === 'Turis' && row.status === 'approved') stats.approvedTuris = row.total;
             if (row.role === 'Penyedia Jasa' && row.status === 'approved') stats.approvedPenyedia = row.total;
@@ -93,7 +93,7 @@ router.post('/approve-user', isSuperadmin, async (req, res) => {
     
     try {
         const [result] = await db.execute(
-            'UPDATE users SET status = "approved" WHERE id = ? AND role IN ("Turis", "Penyedia Jasa")',
+            'UPDATE users SET status = "approved" WHERE id = ? AND role = "Penyedia Jasa"',
             [user_id]
         );
         
@@ -114,7 +114,7 @@ router.post('/reject-user', isSuperadmin, async (req, res) => {
 
     try {
         const [result] = await db.execute(
-            'DELETE FROM users WHERE id = ? AND status = "pending" AND role IN ("Turis", "Penyedia Jasa")',
+            'DELETE FROM users WHERE id = ? AND status = "pending" AND role = "Penyedia Jasa"',
             [user_id]
         );
 

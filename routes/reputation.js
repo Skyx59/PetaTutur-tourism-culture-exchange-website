@@ -4,6 +4,29 @@ import db from '../db/db.js';
 const router = express.Router();
 const ALLOWED_ROLES = ['Turis', 'Superadmin'];
 
+const ensureReputationTable = async () => {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS reputation_reviews (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                tourist_id INT NOT NULL,
+                subject_name VARCHAR(255) NOT NULL,
+                subject_type ENUM('Lokasi Budaya', 'Penyedia Jasa', 'Itinerary') DEFAULT 'Lokasi Budaya',
+                rating TINYINT NOT NULL,
+                comment TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (tourist_id) REFERENCES users(id) ON DELETE CASCADE,
+                CONSTRAINT chk_reputation_rating CHECK (rating BETWEEN 1 AND 5)
+            )
+        `);
+    } catch (error) {
+        if (['ER_TABLEACCESS_DENIED_ERROR', 'ER_DBACCESS_DENIED_ERROR', 'ER_SPECIFIC_ACCESS_DENIED_ERROR'].includes(error.code)) {
+            return;
+        }
+        throw error;
+    }
+};
+
 const requireReputationAccess = (req, res, next) => {
     const role = req.headers['x-user-role'];
     if (ALLOWED_ROLES.includes(role)) return next();
@@ -13,6 +36,8 @@ const requireReputationAccess = (req, res, next) => {
 // GET /api/reputation
 router.get('/', requireReputationAccess, async (req, res) => {
     try {
+        await ensureReputationTable();
+
         const [reviews] = await db.execute(`
             SELECT
                 r.id,
@@ -41,6 +66,12 @@ router.get('/', requireReputationAccess, async (req, res) => {
         });
     } catch (error) {
         console.error('Reputation list error:', error);
+        if (error.code === 'ER_NO_SUCH_TABLE') {
+            return res.json({
+                summary: { total_reviews: 0, average_rating: 0 },
+                reviews: []
+            });
+        }
         res.status(500).json({ message: 'Gagal memuat data reputation.' });
     }
 });
@@ -56,6 +87,8 @@ router.post('/', requireReputationAccess, async (req, res) => {
     }
 
     try {
+        await ensureReputationTable();
+
         const [result] = await db.execute(
             'INSERT INTO reputation_reviews (tourist_id, subject_name, subject_type, rating, comment) VALUES (?, ?, ?, ?, ?)',
             [userId, subjectName, subjectType, numericRating, comment]
