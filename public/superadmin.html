@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superadmin | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="admin-hero">
+            <div>
+                <span class="role-pill">Superadmin Console</span>
+                <h1>Kurasi Registrasi Peta Tutur</h1>
+                <p>Kelola verifikasi Penyedia Jasa sebelum mereka masuk ke ekosistem Peta Tutur.</p>
+            </div>
+            <div class="admin-actions">
+                <a href="crowdsourcing.html" class="admin-action-link admin-action-primary">Crowdsourcing</a>
+                <a href="reputation.html" class="admin-action-link admin-action-primary">Reputation</a>
+            </div>
+        </section>
+
+        <section class="stat-grid">
+            <article class="stat-card">
+                <span>Pending Penyedia</span>
+                <strong id="pendingPenyediaStat">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Turis Aktif</span>
+                <strong id="approvedTurisStat">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Penyedia Aktif</span>
+                <strong id="approvedPenyediaStat">0</strong>
+            </article>
+        </section>
+
+        <section id="approvalRoot" class="approval-grid single-approval">
+            <div>
+                <div class="section-heading">
+                    <span class="role-pill">Penyedia Jasa</span>
+                    <h2>Registrasi Penyedia Jasa</h2>
+                </div>
+                <div id="pendingPenyediaList" class="approval-list">
+                    <div class="empty-state">Memuat data...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

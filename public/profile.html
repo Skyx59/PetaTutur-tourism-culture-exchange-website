@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Profil</span>
+            <h1>Pusat Kendali Pengguna</h1>
+            <p>Kelola identitas, jejak perjalanan, dan transparansi akses akun Peta Tutur.</p>
+        </section>
+
+        <div class="profile-wrapper">
+            <aside class="profile-sidebar">
+                <button type="button" class="sidebar-link active" data-profile-tab="credentials">Credential Info</button>
+                <button type="button" class="sidebar-link" data-profile-tab="travel-log">Travel Log</button>
+                <button type="button" class="sidebar-link" data-profile-tab="access-management">Access Management</button>
+                <a href="index.html" class="sidebar-link logout-link" id="logoutBtn">Logout</a>
+            </aside>
+
+            <section class="profile-main profile-tab-panel active" id="credentials-panel">
+                <div class="section-heading">
+                    <span class="role-pill">Akun</span>
+                    <h2>Credential Info</h2>
+                </div>
+                <div class="profile-info-card">
+                    <div class="profile-row">
+                        <div class="profile-label">Nama Lengkap</div>
+                        <div class="profile-value" id="profile-name">Loading...</div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-label">Alamat Email</div>
+                        <div class="profile-value" id="profile-email">Loading...</div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-label">Peran Pengguna</div>
+                        <div class="profile-value" id="profile-role">Loading...</div>
+                    </div>
+                    <div class="profile-row">
+                        <div class="profile-label">Status Akun</div>
+                        <div class="profile-value" id="profile-status">Active</div>
+                    </div>
+                    <div id="agencyRow" class="profile-row" style="display: none;">
+                        <div class="profile-label">Nama Agensi</div>
+                        <div class="profile-value" id="profile-agency">-</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-main profile-tab-panel" id="travel-log-panel">
+                <div class="section-heading">
+                    <span class="role-pill">Travel Log</span>
+                    <h2>Riwayat Perjalanan Nyata</h2>
+                </div>
+                <div class="travel-metrics" id="travelLogMetrics"></div>
+                <div class="travel-log-layout">
+                    <div>
+                        <div class="section-heading compact-heading">
+                            <span class="role-pill">Visit</span>
+                            <h3>Destinasi Tervalidasi</h3>
+                        </div>
+                        <div class="validated-itinerary-grid" id="travelTimeline"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-main profile-tab-panel" id="access-management-panel">
+                <div class="section-heading">
+                    <span class="role-pill">RBAC</span>
+                    <h2>Access Management</h2>
+                </div>
+                <div id="accessManagementRoot"></div>
+            </section>
+        </div>
+    </main>
+
+    <dialog id="travelDetailModal" class="auth-modal travel-detail-modal">
+        <div class="modal-header">
+            <h2 id="travelDetailTitle">Detail Itinerary</h2>
+            <button class="close-modal" id="closeTravelDetail" type="button">&times;</button>
+        </div>
+        <div class="tabs travel-detail-tabs">
+            <button class="tab-btn active" type="button" data-travel-detail-tab="locations">Lokasi Destinasi</button>
+            <button class="tab-btn" type="button" data-travel-detail-tab="assets">Aset Budaya</button>
+        </div>
+        <div class="modal-body">
+            <div class="travel-detail-meta" id="travelDetailMeta"></div>
+            <section class="travel-detail-panel active" id="travelLocationsPanel">
+                <div class="travel-location-list" id="travelDetailLocations"></div>
+            </section>
+            <section class="travel-detail-panel" id="travelAssetsPanel">
+                <div class="travel-asset-grid" id="travelDetailAssets"></div>
+                <div id="travelAssetDetail" class="asset-detail-panel empty-state">Pilih aset budaya untuk melihat narasi lengkap atau pratinjau audio.</div>
+            </section>
+        </div>
+    </dialog>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowdsourcing | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Crowdsourcing</span>
+            <h1>Kontribusi Narasi Budaya</h1>
+            <p>Ruang kurasi cerita, lokasi budaya, dan pengetahuan lokal dari Penyedia Jasa.</p>
+        </section>
+
+        <section class="feature-layout">
+            <aside class="form-panel">
+                <h2>Kirim Kontribusi</h2>
+                <p class="muted-text">Masuk sebagai <strong id="crowdsourcingUserName">-</strong></p>
+                <form id="crowdsourcingForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Nama Lokasi / Tradisi</label>
+                        <input type="text" id="crowdLocation" placeholder="Contoh: Upacara Seren Taun" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Narasi Budaya</label>
+                        <textarea id="crowdDescription" rows="8" placeholder="Tuliskan cerita, konteks, atau catatan budaya." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-cta">Kirim Kontribusi</button>
+                </form>
+            </aside>
+
+            <section class="feature-list">
+                <div class="section-heading">
+                    <span class="role-pill">Feed</span>
+                    <h2>Kontribusi Terkini</h2>
+                </div>
+                <div id="crowdsourcingList" class="feature-card-list">
+                    <div class="empty-state">Memuat kontribusi...</div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

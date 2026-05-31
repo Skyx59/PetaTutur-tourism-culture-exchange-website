@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerbang Tutur | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <a href="index.html" class="logo">Peta Tutur</a>
+        </nav>
+    </header>
+
+    <main class="container gate-page">
+        <section class="gate-panel">
+            <span class="role-pill">Superadmin</span>
+            <h1>Gerbang Tutur</h1>
+            <form id="superadminGateForm" class="auth-form">
+                <div class="form-group">
+                    <label>Kunci Gerbang</label>
+                    <input type="password" id="gateKey" placeholder="Masukkan kunci akses" required>
+                </div>
+                <button type="submit" class="btn-cta" id="gateSubmit">Masuk Superadmin</button>
+                <p class="form-message" id="gateMessage" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

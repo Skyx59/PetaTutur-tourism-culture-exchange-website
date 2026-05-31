@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Perencanaan | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Itinerary</span>
+            <h1>Riwayat Perencanaan</h1>
+            <p>Daftar draft dan rencana perjalanan budaya yang pernah Anda susun.</p>
+        </section>
+
+        <section class="feature-list history-section">
+            <div class="section-heading">
+                <span class="role-pill">Riwayat</span>
+                <h2>Perjalanan Tersimpan</h2>
+            </div>
+            <div class="history-grid" id="history-grid">
+                <!-- Data fetched from API -->
+            </div>
+        </section>
+    </main>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="custom-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="historyModalTitle">Detail Perjalanan</h2>
+                <button class="close-modal" id="closeHistory">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="timeline" id="historyTimeline">
+                    <!-- History details here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchHistory);
+
+        async function fetchHistory() {
+            const user = JSON.parse(localStorage.getItem('pt_user'));
+            if (!user) return;
+
+            try {
+                const response = await fetch(`/api/itinerary/history/${user.id || 1}`);
+                if (!response.ok) throw new Error('Gagal memuat riwayat itinerary.');
+                const itineraries = await response.json();
+                
+                const grid = document.getElementById('history-grid');
+                grid.innerHTML = '';
+
+                if (itineraries.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">Belum ada riwayat perencanaan.</div>';
+                    return;
+                }
+                
+                itineraries.forEach(itin => {
+                    const isCompleted = itin.status === 'Completed';
+                    const statusLabel = isCompleted ? 'Selesai' : 'Pending';
+                    const statusClass = isCompleted ? 'approved' : 'pending';
+                    const card = document.createElement('div');
+                    card.className = 'feature-item-card history-card';
+                    card.innerHTML = `
+                        <div class="feature-card-topline">
+                            <span>${new Date(itin.travel_date).toLocaleDateString('id-ID')}</span>
+                            <span class="status-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <h3>${itin.title}</h3>
+                        <p>Wilayah: ${itin.region} | Durasi: ${itin.hours} Jam</p>
+                        <button class="btn-detail show-detail" data-id="${itin.id}">Lihat Detail</button>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                document.querySelectorAll('.show-detail').forEach(btn => {
+                    btn.addEventListener('click', () => showDetail(btn.dataset.id, itineraries));
+                });
+            } catch (error) {
+                console.error(error);
+                showAppPopup(error.message || 'Gagal memuat riwayat itinerary.', 'error');
+            }
+        }
+
+        function showDetail(id, itineraries) {
+            const itin = itineraries.find(i => i.id == id);
+            if (!itin) return;
+
+            const modal = document.getElementById('historyModal');
+            document.getElementById('historyModalTitle').textContent = itin.title;
+            
+            const timeline = document.getElementById('historyTimeline');
+            timeline.innerHTML = '';
+            
+            const route = typeof itin.route_data === 'string' ? JSON.parse(itin.route_data) : itin.route_data;
+            
+            route.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.innerHTML = `
+                    <strong>${item.time} - ${item.location}</strong>
+                    <p>${item.desc}</p>
+                `;
+                timeline.appendChild(div);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        document.getElementById('closeHistory').onclick = () => {
+            document.getElementById('historyModal').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reputation | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Reputation</span>
+            <h1>Jejak Kepercayaan Wisata Budaya</h1>
+            <p>Catatan pengalaman Turis untuk lokasi, penyedia jasa, dan itinerary budaya.</p>
+        </section>
+
+        <section class="stat-grid">
+            <article class="stat-card">
+                <span>Rata-rata Rating</span>
+                <strong><span id="averageRating">0</span>/5</strong>
+            </article>
+            <article class="stat-card">
+                <span>Total Ulasan</span>
+                <strong id="totalReviews">0</strong>
+            </article>
+        </section>
+
+        <section class="feature-layout">
+            <aside class="form-panel">
+                <h2>Tambah Ulasan</h2>
+                <form id="reputationForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Subjek Ulasan</label>
+                        <input type="text" id="reputationSubject" placeholder="Contoh: Saung Angklung Udjo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipe Subjek</label>
+                        <select id="reputationType" required>
+                            <option value="Lokasi Budaya">Lokasi Budaya</option>
+                            <option value="Penyedia Jasa">Penyedia Jasa</option>
+                            <option value="Itinerary">Itinerary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select id="reputationRating" required>
+                            <option value="5">5 - Sangat baik</option>
+                            <option value="4">4 - Baik</option>
+                            <option value="3">3 - Cukup</option>
+                            <option value="2">2 - Kurang</option>
+                            <option value="1">1 - Buruk</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ulasan</label>
+                        <textarea id="reputationComment" rows="7" placeholder="Bagikan pengalaman Anda." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-cta">Kirim Ulasan</button>
+                </form>
+            </aside>
+
+            <section class="feature-list">
+                <div class="section-heading">
+                    <span class="role-pill">Review</span>
+                    <h2>Ulasan Terbaru</h2>
+                </div>
+                <div id="reputationList" class="feature-card-list">
+                    <div class="empty-state">Memuat ulasan...</div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

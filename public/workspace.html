@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Itinerary | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Itinerary</span>
+            <h1>Ruang Itinerary</h1>
+            <p>Susun rencana perjalanan budaya berdasarkan wilayah, tanggal, dan durasi eksplorasi.</p>
+        </section>
+
+        <section id="workspace-stepper" class="workspace-stepper">
+            <!-- Step 1: Region Selection -->
+            <div id="step-1">
+                <div class="section-heading">
+                    <span class="role-pill">Langkah 1</span>
+                    <h2>Pilih Wilayah Eksplorasi</h2>
+                </div>
+                <div class="catalog-grid" id="region-selector">
+                    <div class="empty-state">Memuat wilayah eksplorasi...</div>
+                </div>
+                <button class="btn-cta compact-action step-primary-action" onclick="goToStep(2)">Lanjut ke Waktu</button>
+            </div>
+
+            <!-- Step 2: Time & Date Selection -->
+            <div id="step-2" style="display: none;">
+                <div class="section-heading">
+                    <span class="role-pill">Langkah 2</span>
+                    <h2>Tentukan Waktu & Tanggal</h2>
+                </div>
+                <div class="form-panel itinerary-form-panel">
+                    <div class="form-group">
+                        <label>Tanggal Perjalanan</label>
+                        <input type="date" id="travelDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Durasi Eksplorasi (Jam)</label>
+                        <input type="range" min="2" max="12" value="6" class="time-slider" id="timeRange">
+                        <div class="range-labels">
+                            <span>2 Jam</span>
+                            <span id="currentTime">6 Jam</span>
+                            <span>12 Jam</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline-actions">
+                    <button class="btn-detail" onclick="goToStep(1)">Kembali</button>
+                    <button class="btn-cta compact-action" onclick="generateItinerary()">Buat Itinerary</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Workspace -->
+            <div id="step-3" style="display: none;">
+                <div class="section-heading">
+                    <span class="role-pill">Langkah 3</span>
+                    <h2 id="workspaceTitle">Rencana Perjalanan</h2>
+                </div>
+                <div class="workspace-container">
+                    <div id="map-view" class="map-placeholder">Visualisasi peta interaktif</div>
+                    <div id="itinerary-sidebar">
+                        <h3>Daftar Rute</h3>
+                        <div id="itinerary-list" class="itinerary-list">
+                            <!-- Populated by JS -->
+                        </div>
+                        <button class="btn-cta full-action" id="saveDraftBtn">Simpan Draft</button>
+                        <button class="btn-detail full-action" onclick="goToStep(2)">Ubah Waktu</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        let selectedRegion = '';
+        let generatedData = null;
+        const regionSelector = document.getElementById('region-selector');
+
+        fetchWorkspaceRegions();
+
+        regionSelector.addEventListener('click', (event) => {
+            const card = event.target.closest('.selectable');
+            if (!card) return;
+
+            document.querySelectorAll('.selectable').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedRegion = card.dataset.region;
+        });
+
+        const slider = document.getElementById('timeRange');
+        slider?.addEventListener('input', (e) => {
+            document.getElementById('currentTime').textContent = `${e.target.value} Jam`;
+        });
+
+        async function fetchWorkspaceRegions() {
+            try {
+                const response = await fetch('/api/catalog');
+                if (!response.ok) throw new Error('Gagal memuat wilayah eksplorasi.');
+
+                const regions = await response.json();
+                renderWorkspaceRegions(regions);
+            } catch (error) {
+                console.error(error);
+                regionSelector.innerHTML = '<div class="empty-state">Gagal memuat wilayah eksplorasi.</div>';
+                showAppPopup(error.message || 'Gagal memuat wilayah eksplorasi.', 'error');
+            }
+        }
+
+        function renderWorkspaceRegions(regions) {
+            regionSelector.innerHTML = regions.map(region => `
+                <article class="region-card selectable" data-region="${escapeHtml(region.region)}" role="button" tabindex="0">
+                    <div class="card-media" aria-hidden="true">
+                        <span>${escapeHtml(region.region)}</span>
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <span class="role-pill">Wilayah</span>
+                            <h3>${escapeHtml(region.region)}</h3>
+                            <p>${escapeHtml(region.description || 'Jelajahi narasi budaya wilayah ini.')}</p>
+                            <div class="catalog-tag-row">
+                                ${(region.tags || []).slice(0, 4).map(tag => `<span class="mini-chip">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="region-card-footer">
+                            <span class="badge">${escapeHtml(region.locationCount || 0)} Lokasi</span>
+                            <span class="badge">${escapeHtml(region.count || 0)} Narasi</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function goToStep(n) {
+            if (n === 2 && !selectedRegion) {
+                showAppPopup('Pilih wilayah terlebih dahulu!', 'warning', 'Wilayah Belum Dipilih');
+                return;
+            }
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById(`step-${n}`).style.display = 'block';
+        }
+
+        async function generateItinerary() {
+            const date = document.getElementById('travelDate').value;
+            const hours = document.getElementById('timeRange').value;
+            
+            if (!date) {
+                showAppPopup('Pilih tanggal perjalanan!', 'warning', 'Tanggal Belum Dipilih');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/itinerary/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ region: selectedRegion, hours, travelDate: date })
+                });
+                if (!response.ok) throw new Error('Gagal membuat itinerary');
+                generatedData = await response.json();
+                
+                renderItinerary(generatedData);
+                goToStep(3);
+                document.getElementById('workspaceTitle').textContent = `Rencana Perjalanan: ${selectedRegion} (${date})`;
+            } catch (error) {
+                console.error(error);
+                showAppPopup(error.message || 'Gagal membuat itinerary', 'error');
+            }
+        }
+
+        function renderItinerary(data) {
+            const list = document.getElementById('itinerary-list');
+            list.innerHTML = '';
+            data.route.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'itinerary-item';
+                div.innerHTML = `
+                    <strong>${item.time} - ${item.location}</strong>
+                    <p>${item.desc}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        document.getElementById('saveDraftBtn').addEventListener('click', async () => {
+            const user = JSON.parse(localStorage.getItem('pt_user'));
+            if (!user) {
+                showAppPopup('Silakan login terlebih dahulu', 'warning', 'Login Diperlukan');
+                return;
+            }
+
+            if (!generatedData) {
+                showAppPopup('Buat itinerary terlebih dahulu sebelum menyimpan.', 'warning', 'Itinerary Belum Ada');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/itinerary/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        touristId: user.id || 1,
+                        title: generatedData.title,
+                        travelDate: generatedData.travelDate,
+                        region: generatedData.region,
+                        hours: generatedData.hours,
+                        routeData: generatedData.route
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Gagal menyimpan itinerary');
+                showAppPopup(result.message, 'success');
+                setTimeout(() => {
+                    window.location.href = 'history.html';
+                }, 850);
+            } catch (error) {
+                console.error(error);
+                showAppPopup(error.message || 'Gagal menyimpan draft', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

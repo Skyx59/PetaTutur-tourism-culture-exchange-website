@@ -1,61 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta Tutur | Cultural Heritage Optimizer</title>
+    <title>Peta Tutur | Cultural Exchange & Tourism</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Peta Tutur</h1>
-            <p>Spatial-Temporal Cultural Optimizer. Discover the hidden heritage of Indonesia through curated folklore journeys.</p>
-        </div>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-links">
+                <button class="btn-auth" id="openLogin">Masuk</button>
+                <button class="btn-auth" id="openRegister">Daftar</button>
+            </div>
+        </nav>
     </header>
 
     <main class="container">
-        <section class="control-panel glassmorphism">
-            <h2>Plan Your Journey</h2>
-            <form id="itinerary-form">
-                <div class="form-group">
-                    <label for="start-location">Starting Location</label>
-                    <input type="text" id="start-location" name="start-location" placeholder="e.g., Yogyakarta" required>
-                </div>
-                <div class="form-group">
-                    <label for="time-avail">Time Availability (Hours)</label>
-                    <input type="number" id="time-avail" name="time-avail" min="1" max="72" placeholder="e.g., 6" required>
-                </div>
-                <button type="submit" class="btn-primary">Generate Itinerary</button>
-            </form>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Explore Heritage, Exchange Stories.</h1>
+                <p>Menghubungkan penjelajah budaya dengan penjaga tradisi lokal untuk pengalaman wisata yang lebih bermakna.</p>
+                <button class="btn-cta" id="heroGetStarted">Mulai Sekarang</button>
+            </div>
+            <div class="hero-image-box"></div>
         </section>
 
-        <section class="dashboard">
-            <div class="map-container glassmorphism" id="map-view">
-                <div class="map-placeholder">
-                    <p>Interactive Map View</p>
-                    <span>(Routing API Placeholder)</span>
-                </div>
+        <section class="features">
+            <div class="feature-card">
+                <h3>Eksplorasi</h3>
+                <p>Temukan destinasi unik yang belum banyak dijelajahi.</p>
             </div>
-
-            <div class="sidebar">
-                <div class="timeline-container glassmorphism" id="timeline">
-                    <h3>Your Itinerary</h3>
-                    <div class="timeline-nodes" id="timeline-nodes">
-                        <p class="empty-state">Enter your details to generate a cultural journey.</p>
-                    </div>
-                </div>
-
-                <div class="narrative-card glassmorphism" id="narrative-card">
-                    <h3>Cultural Narrative</h3>
-                    <div id="narrative-content">
-                        <p class="empty-state">Select a destination from your timeline to unveil its folklore.</p>
-                    </div>
-                </div>
+            <div class="feature-card">
+                <h3>Interaksi</h3>
+                <p>Terhubung langsung dengan pemandu lokal dan penjaga tradisi.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Kontribusi</h3>
+                <p>Bagikan cerita dan bantu melestarikan budaya lokal.</p>
             </div>
         </section>
     </main>
+
+    <!-- Auth Modal -->
+    <dialog id="authModal" class="auth-modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Daftar Akun</h2>
+            <button class="close-modal" onclick="this.closest('dialog').close()">&times;</button>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" id="tabTuris">Turis</button>
+            <button class="tab-btn" id="tabPenyedia">Penyedia Jasa</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="authForm" class="auth-form">
+                <div class="form-group" id="nameGroup">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="userName" placeholder="Nama Anda">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEmail" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="userPassword" placeholder="••••••••" required>
+                </div>
+                <div class="form-group" id="agencyGroup" style="display: none;">
+                    <label>Nama Agensi / Sanggar</label>
+                    <input type="text" id="userAgency" placeholder="Contoh: Sanggar Tari Melati">
+                </div>
+                
+                <input type="hidden" id="userRole" value="Turis">
+                <input type="hidden" id="authMode" value="register">
+
+                <button type="submit" class="btn-cta" style="width: 100%; margin-top: 1rem;" id="submitBtn">Daftar Sekarang</button>
+                <p class="auth-switch-text" id="registerLoginOption">
+                    Sudah punya akun?
+                    <button type="button" id="switchToLogin" class="auth-switch-btn">Masuk</button>
+                </p>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Registration Success Popup -->
+    <dialog id="registrationSuccessModal" class="auth-modal status-modal">
+        <div class="modal-header">
+            <h2>Registrasi Berhasil</h2>
+            <button class="close-modal" onclick="this.closest('dialog').close()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="registrationSuccessMessage" class="status-message">Akun berhasil dibuat. Silakan masuk untuk membuka dashboard.</p>
+            <button type="button" class="btn-cta" id="openLoginAfterRegister">Masuk Sekarang</button>
+        </div>
+    </dialog>
 
     <script src="app.js"></script>
 </body>

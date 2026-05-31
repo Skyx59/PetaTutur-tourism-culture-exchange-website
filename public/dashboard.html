@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Peta Tutur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar-container">
+            <div class="logo">Peta Tutur</div>
+            <div class="nav-center">
+                <a href="dashboard.html" class="nav-item">Home</a>
+                <a href="catalog.html" class="nav-item">Cultural Catalog</a>
+                
+                <div class="nav-item dropdown">
+                    <span>Itinerary Workspace</span>
+                    <span class="chevron"></span>
+                    <div class="dropdown-menu">
+                        <a href="workspace.html">Create New</a>
+                        <a href="history.html">Planning History</a>
+                    </div>
+                </div>
+
+                <a href="crowdsourcing.html" class="nav-item" data-feature="crowdsourcing">Crowdsourcing</a>
+                <a href="reputation.html" class="nav-item" data-feature="reputation">Reputation</a>
+            </div>
+            <div class="nav-links">
+                <a href="profile.html" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <span class="role-pill">Home</span>
+            <h1>Welcome to Peta Tutur</h1>
+            <p>Jelajahi dan rawat warisan budaya bersama komunitas Peta Tutur.</p>
+        </section>
+            
+        <section class="dashboard-map-section">
+            <div id="map-view" class="map-placeholder dashboard-map">Peta spasial interaktif</div>
+        </section>
+
+        <section class="dashboard-card-grid">
+            <article class="feature-item-card dashboard-card">
+                <span class="role-pill">Katalog</span>
+                <h3>Katalog Budaya</h3>
+                <p>Telusuri narasi, lokasi, dan jejak budaya dari berbagai wilayah pilihan.</p>
+                <button class="btn-cta compact-action" onclick="window.location.href='catalog.html'">Buka Katalog</button>
+            </article>
+            <article class="feature-item-card dashboard-card">
+                <span class="role-pill">Itinerary</span>
+                <h3>Mulai Perjalanan</h3>
+                <p>Rancang perjalanan pertukaran budaya dengan bantuan ruang itinerary.</p>
+                <button class="btn-cta compact-action" onclick="window.location.href='workspace.html'">Mulai Rencana</button>
+            </article>
+            <article class="feature-item-card dashboard-card" data-feature-card="crowdsourcing">
+                <span class="role-pill">Kontribusi</span>
+                <h3>Crowdsourcing</h3>
+                <p>Tambahkan narasi lokal, tradisi, dan catatan budaya untuk dikurasi komunitas.</p>
+                <button class="btn-cta compact-action" onclick="window.location.href='crowdsourcing.html'">Buka Crowdsourcing</button>
+            </article>
+            <article class="feature-item-card dashboard-card" data-feature-card="reputation">
+                <span class="role-pill">Ulasan</span>
+                <h3>Reputation</h3>
+                <p>Tulis ulasan pengalaman budaya dan baca sinyal kepercayaan dari komunitas wisata.</p>
+                <button class="btn-cta compact-action" onclick="window.location.href='reputation.html'">Buka Reputation</button>
+            </article>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
