@@ -52,22 +52,7 @@
                     <h2>Pilih Wilayah Eksplorasi</h2>
                 </div>
                 <div class="catalog-grid" id="region-selector">
-                    <div class="region-card selectable" data-region="DKI Jakarta">
-                        <div class="card-media"></div>
-                        <div class="card-content"><span class="role-pill">Wilayah</span><h3>DKI Jakarta</h3></div>
-                    </div>
-                    <div class="region-card selectable" data-region="Jawa Barat">
-                        <div class="card-media"></div>
-                        <div class="card-content"><span class="role-pill">Wilayah</span><h3>Jawa Barat</h3></div>
-                    </div>
-                    <div class="region-card selectable" data-region="DI Yogyakarta">
-                        <div class="card-media"></div>
-                        <div class="card-content"><span class="role-pill">Wilayah</span><h3>DI Yogyakarta</h3></div>
-                    </div>
-                    <div class="region-card selectable" data-region="Bali">
-                        <div class="card-media"></div>
-                        <div class="card-content"><span class="role-pill">Wilayah</span><h3>Bali</h3></div>
-                    </div>
+                    <div class="empty-state">Memuat wilayah eksplorasi...</div>
                 </div>
                 <button class="btn-cta compact-action step-primary-action" onclick="goToStep(2)">Lanjut ke Waktu</button>
             </div>
@@ -124,13 +109,17 @@
     <script>
         let selectedRegion = '';
         let generatedData = null;
+        const regionSelector = document.getElementById('region-selector');
 
-        document.querySelectorAll('.selectable').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.selectable').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                selectedRegion = card.dataset.region;
-            });
+        fetchWorkspaceRegions();
+
+        regionSelector.addEventListener('click', (event) => {
+            const card = event.target.closest('.selectable');
+            if (!card) return;
+
+            document.querySelectorAll('.selectable').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedRegion = card.dataset.region;
         });
 
         const slider = document.getElementById('timeRange');
@@ -138,9 +127,47 @@
             document.getElementById('currentTime').textContent = `${e.target.value} Jam`;
         });
 
+        async function fetchWorkspaceRegions() {
+            try {
+                const response = await fetch('/api/catalog');
+                if (!response.ok) throw new Error('Gagal memuat wilayah eksplorasi.');
+
+                const regions = await response.json();
+                renderWorkspaceRegions(regions);
+            } catch (error) {
+                console.error(error);
+                regionSelector.innerHTML = '<div class="empty-state">Gagal memuat wilayah eksplorasi.</div>';
+                showAppPopup(error.message || 'Gagal memuat wilayah eksplorasi.', 'error');
+            }
+        }
+
+        function renderWorkspaceRegions(regions) {
+            regionSelector.innerHTML = regions.map(region => `
+                <article class="region-card selectable" data-region="${escapeHtml(region.region)}" role="button" tabindex="0">
+                    <div class="card-media" aria-hidden="true">
+                        <span>${escapeHtml(region.region)}</span>
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <span class="role-pill">Wilayah</span>
+                            <h3>${escapeHtml(region.region)}</h3>
+                            <p>${escapeHtml(region.description || 'Jelajahi narasi budaya wilayah ini.')}</p>
+                            <div class="catalog-tag-row">
+                                ${(region.tags || []).slice(0, 4).map(tag => `<span class="mini-chip">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="region-card-footer">
+                            <span class="badge">${escapeHtml(region.locationCount || 0)} Lokasi</span>
+                            <span class="badge">${escapeHtml(region.count || 0)} Narasi</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
         function goToStep(n) {
             if (n === 2 && !selectedRegion) {
-                alert('Pilih wilayah terlebih dahulu!');
+                showAppPopup('Pilih wilayah terlebih dahulu!', 'warning', 'Wilayah Belum Dipilih');
                 return;
             }
             document.getElementById('step-1').style.display = 'none';
@@ -154,7 +181,7 @@
             const hours = document.getElementById('timeRange').value;
             
             if (!date) {
-                alert('Pilih tanggal perjalanan!');
+                showAppPopup('Pilih tanggal perjalanan!', 'warning', 'Tanggal Belum Dipilih');
                 return;
             }
 
@@ -164,6 +191,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ region: selectedRegion, hours, travelDate: date })
                 });
+                if (!response.ok) throw new Error('Gagal membuat itinerary');
                 generatedData = await response.json();
                 
                 renderItinerary(generatedData);
@@ -171,7 +199,7 @@
                 document.getElementById('workspaceTitle').textContent = `Rencana Perjalanan: ${selectedRegion} (${date})`;
             } catch (error) {
                 console.error(error);
-                alert('Gagal membuat itinerary');
+                showAppPopup(error.message || 'Gagal membuat itinerary', 'error');
             }
         }
 
@@ -191,7 +219,15 @@
 
         document.getElementById('saveDraftBtn').addEventListener('click', async () => {
             const user = JSON.parse(localStorage.getItem('pt_user'));
-            if (!user) return alert('Silakan login terlebih dahulu');
+            if (!user) {
+                showAppPopup('Silakan login terlebih dahulu', 'warning', 'Login Diperlukan');
+                return;
+            }
+
+            if (!generatedData) {
+                showAppPopup('Buat itinerary terlebih dahulu sebelum menyimpan.', 'warning', 'Itinerary Belum Ada');
+                return;
+            }
 
             try {
                 const response = await fetch('/api/itinerary/save', {
@@ -207,11 +243,14 @@
                     })
                 });
                 const result = await response.json();
-                alert(result.message);
-                window.location.href = 'history.html';
+                if (!response.ok) throw new Error(result.message || 'Gagal menyimpan itinerary');
+                showAppPopup(result.message, 'success');
+                setTimeout(() => {
+                    window.location.href = 'history.html';
+                }, 850);
             } catch (error) {
                 console.error(error);
-                alert('Gagal menyimpan draft');
+                showAppPopup(error.message || 'Gagal menyimpan draft', 'error');
             }
         });
     </script>

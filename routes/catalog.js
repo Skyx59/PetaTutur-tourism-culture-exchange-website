@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../db/db.js';
+import { REGION_DATA, buildNarratives } from '../db/seed-cultural-data.js';
 
 const router = express.Router();
 
@@ -65,6 +66,53 @@ function parseJsonArray(value) {
     }
 }
 
+function findSeedRegion(regionName) {
+    return REGION_DATA.find(item => item.region === regionName);
+}
+
+function buildSeedRegionSummary(regionData) {
+    return {
+        region: regionData.region,
+        count: buildNarratives(regionData).length,
+        locationCount: regionData.locations.length,
+        description: regionData.description,
+        tags: regionData.tags
+    };
+}
+
+function buildSeedNarrativeGroups(regionData) {
+    const byLocation = new Map(regionData.locations.map(([city, name, description, category, tags], index) => [
+        name,
+        {
+            id: `seed-location-${index + 1}`,
+            city,
+            name,
+            description,
+            category,
+            tags,
+            narratives: []
+        }
+    ]));
+
+    buildNarratives(regionData).forEach((narrative, index) => {
+        const target = byLocation.get(narrative.locationName);
+        if (!target) return;
+
+        target.narratives.push({
+            id: `seed-narrative-${index + 1}`,
+            title: narrative.title,
+            description: narrative.description,
+            narrativeType: narrative.narrativeType,
+            mediaType: narrative.mediaType,
+            mediaPath: narrative.mediaPath || '',
+            providerName: 'Peta Tutur Cultural Seed',
+            tags: narrative.tags
+        });
+    });
+
+    return [...byLocation.values()];
+}
+
 // GET /api/catalog - Get all regions with narrative counts
 router.get('/', async (req, res) => {
     try {
@@ -81,18 +129,41 @@ router.get('/', async (req, res) => {
             ORDER BY l.region
         `);
 
-        const result = regions.map(r => ({
-            region: r.region,
-            count: Number(r.narrative_count) || Number(r.location_count),
-            locationCount: Number(r.location_count),
-            description: REGION_META[r.region]?.description || 'Jelajahi keunikan budaya wilayah ini.',
-            tags: REGION_META[r.region]?.tags || []
-        }));
+        const rowsByRegion = new Map(regions.map(row => [row.region, row]));
+        const seededRegionNames = new Set(REGION_DATA.map(item => item.region));
+
+        const result = REGION_DATA.map(regionData => {
+            const row = rowsByRegion.get(regionData.region);
+            if (!row) return buildSeedRegionSummary(regionData);
+
+            const narrativeCount = Number(row.narrative_count);
+            if (narrativeCount === 0) return buildSeedRegionSummary(regionData);
+
+            return {
+                region: row.region,
+                count: narrativeCount,
+                locationCount: Number(row.location_count) || regionData.locations.length,
+                description: REGION_META[row.region]?.description || regionData.description,
+                tags: REGION_META[row.region]?.tags || regionData.tags
+            };
+        });
+
+        regions
+            .filter(row => !seededRegionNames.has(row.region))
+            .forEach(row => {
+                result.push({
+                    region: row.region,
+                    count: Number(row.narrative_count) || Number(row.location_count),
+                    locationCount: Number(row.location_count),
+                    description: REGION_META[row.region]?.description || 'Jelajahi keunikan budaya wilayah ini.',
+                    tags: REGION_META[row.region]?.tags || []
+                });
+            });
 
         res.json(result);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error fetching catalog' });
+        res.json(REGION_DATA.map(buildSeedRegionSummary));
     }
 });
 
@@ -153,9 +224,21 @@ router.get('/:region/narratives', async (req, res) => {
             }
         });
 
-        res.json([...grouped.values()]);
+        const groupedValues = [...grouped.values()];
+        const totalNarratives = groupedValues.reduce((sum, item) => sum + item.narratives.length, 0);
+        const seedRegion = findSeedRegion(region);
+
+        if (seedRegion && totalNarratives === 0) {
+            return res.json(buildSeedNarrativeGroups(seedRegion));
+        }
+
+        res.json(groupedValues);
     } catch (error) {
         console.error(error);
+        const seedRegion = findSeedRegion(region);
+        if (seedRegion) {
+            return res.json(buildSeedNarrativeGroups(seedRegion));
+        }
         res.status(500).json({ message: 'Error fetching narratives' });
     }
 });

@@ -1497,8 +1497,34 @@ dialog::backdrop {
     width: 100%;
 }
 
+.app-popup-modal {
+    max-width: 430px;
+}
+
+.app-popup-modal[data-popup-type="success"] .modal-header {
+    background: var(--accent-green);
+}
+
+.app-popup-modal[data-popup-type="error"] .modal-header {
+    background: #9F3838;
+}
+
+.app-popup-modal[data-popup-type="warning"] .modal-header {
+    background: #745E19;
+}
+
+.app-popup-modal .close-modal {
+    color: var(--white);
+    opacity: 0.85;
+}
+
 .auth-modal .close-modal {
     color: var(--text-primary);
+}
+
+.auth-modal.app-popup-modal .close-modal {
+    color: var(--white);
+    opacity: 0.85;
 }
 
 .auth-modal.travel-detail-modal .close-modal {

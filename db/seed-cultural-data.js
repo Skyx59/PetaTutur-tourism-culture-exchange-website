@@ -1,4 +1,5 @@
 import db from './db.js';
+import { pathToFileURL } from 'url';
 
 const SEED_PROVIDER = {
     name: 'Peta Tutur Cultural Seed',
@@ -7,7 +8,7 @@ const SEED_PROVIDER = {
     agency: 'Peta Tutur Cultural Data Lab'
 };
 
-const REGION_DATA = [
+export const REGION_DATA = [
     {
         region: 'DKI Jakarta',
         description: 'Ruang temu Betawi, sejarah kolonial, museum nasional, dan kampung kota yang terus bergerak.',
@@ -356,8 +357,8 @@ const REGION_DATA = [
     }
 ];
 
-const NARRATIVE_TARGET_PER_REGION = 30;
-const MAX_AUDIO_PER_REGION = 6;
+export const NARRATIVE_TARGET_PER_REGION = 30;
+export const MAX_AUDIO_PER_REGION = 6;
 
 function slugify(value) {
     return String(value)
@@ -445,7 +446,7 @@ function buildNarrativeDescription(type, regionData, location, theme) {
     return `Cerita naratif ini mengajak turis membaca ${location.name} melalui pengalaman ruang, ingatan warga, dan lapisan sejarah setempat. ${location.description} ${fact} Narasi ini dapat dipakai sebagai bahan interpretasi awal agar perjalanan tidak berhenti pada dokumentasi visual, tetapi juga memahami mengapa tempat tersebut penting bagi identitas wilayah.`;
 }
 
-function buildNarratives(regionData) {
+export function buildNarratives(regionData) {
     const narratives = [];
     let audioCount = 0;
 
@@ -577,11 +578,13 @@ async function main() {
     console.log(`Audio dibatasi maksimal ${MAX_AUDIO_PER_REGION} aset per provinsi. Jalankan ulang perintah ini jika ingin menyegarkan data seed.`);
 }
 
-main()
-    .catch(error => {
-        console.error('Seed cultural data gagal:', error);
-        process.exitCode = 1;
-    })
-    .finally(async () => {
-        await db.end();
-    });
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    main()
+        .catch(error => {
+            console.error('Seed cultural data gagal:', error);
+            process.exitCode = 1;
+        })
+        .finally(async () => {
+            await db.end();
+        });
+}

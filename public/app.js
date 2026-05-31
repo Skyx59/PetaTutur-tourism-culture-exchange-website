@@ -318,6 +318,46 @@ function formatDate(value) {
     });
 }
 
+function showAppPopup(message, type = 'info', title = '') {
+    let modal = document.getElementById('appPopupModal');
+
+    if (!modal) {
+        modal = document.createElement('dialog');
+        modal.id = 'appPopupModal';
+        modal.className = 'auth-modal status-modal app-popup-modal';
+        modal.innerHTML = `
+            <div class="modal-header">
+                <h2 id="appPopupTitle">Informasi</h2>
+                <button class="close-modal" type="button" data-popup-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="appPopupMessage" class="status-message"></p>
+                <button type="button" class="btn-cta" data-popup-close>OK</button>
+            </div>
+        `;
+        modal.addEventListener('click', event => {
+            if (event.target.closest('[data-popup-close]')) {
+                modal.close();
+            }
+        });
+        document.body.appendChild(modal);
+    }
+
+    const fallbackTitles = {
+        success: 'Berhasil',
+        error: 'Gagal',
+        warning: 'Perhatian',
+        info: 'Informasi'
+    };
+
+    modal.dataset.popupType = type;
+    setText('appPopupTitle', title || fallbackTitles[type] || fallbackTitles.info);
+    setText('appPopupMessage', message);
+
+    if (modal.open) modal.close();
+    modal.showModal();
+}
+
 /**
  * Auth Modal Logic (index.html)
  */
@@ -444,11 +484,11 @@ function initAuthModal() {
                     registrationSuccessModal?.showModal();
                 }
             } else {
-                alert(result.message || 'Terjadi kesalahan.');
+                showAppPopup(result.message || 'Terjadi kesalahan.', 'error');
             }
         } catch (error) {
             console.error('Auth error:', error);
-            alert('Gagal terhubung ke server.');
+            showAppPopup('Gagal terhubung ke server.', 'error');
         }
     });
 }
@@ -528,8 +568,10 @@ function initRoleAccess() {
 
     const feature = PAGE_FEATURE[currentPage];
     if (feature && !canAccessFeature(user.role, feature)) {
-        alert('Role Anda tidak memiliki akses ke fitur ini.');
-        window.location.href = 'dashboard.html';
+        showAppPopup('Role Anda tidak memiliki akses ke fitur ini.', 'warning', 'Akses Ditolak');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 850);
     }
 }
 
@@ -1030,10 +1072,10 @@ function initSuperadminPanel() {
                 method: 'POST',
                 body: JSON.stringify({ user_id: userId })
             });
-            alert(result.message);
+            showAppPopup(result.message, 'success');
             await loadSuperadminPanel();
         } catch (error) {
-            alert(error.message);
+            showAppPopup(error.message, 'error');
         } finally {
             actionBtn.disabled = false;
         }
@@ -1124,11 +1166,11 @@ function initCrowdsourcingPage() {
                 body: JSON.stringify(payload)
             });
 
-            alert(result.message);
+            showAppPopup(result.message, 'success');
             form.reset();
             await loadCrowdsourcingItems();
         } catch (error) {
-            alert(error.message);
+            showAppPopup(error.message, 'error');
         }
     });
 
@@ -1141,10 +1183,10 @@ function initCrowdsourcingPage() {
                 method: 'PATCH',
                 body: JSON.stringify({ status: button.dataset.crowdStatus })
             });
-            alert(result.message);
+            showAppPopup(result.message, 'success');
             await loadCrowdsourcingItems();
         } catch (error) {
-            alert(error.message);
+            showAppPopup(error.message, 'error');
         }
     });
 }
@@ -1218,11 +1260,11 @@ function initReputationPage() {
                 body: JSON.stringify(payload)
             });
 
-            alert(result.message);
+            showAppPopup(result.message, 'success');
             form.reset();
             await loadReputationItems();
         } catch (error) {
-            alert(error.message);
+            showAppPopup(error.message, 'error');
         }
     });
 }

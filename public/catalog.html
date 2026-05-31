@@ -75,6 +75,7 @@
         async function fetchCatalog() {
             try {
                 const response = await fetch('/api/catalog');
+                if (!response.ok) throw new Error('Gagal memuat katalog budaya.');
                 const regions = await response.json();
                 
                 const grid = document.getElementById('catalog-grid');
@@ -121,6 +122,7 @@
                 });
             } catch (error) {
                 console.error(error);
+                showAppPopup(error.message || 'Gagal memuat katalog budaya.', 'error');
             }
         }
 
@@ -130,6 +132,7 @@
             
             try {
                 const response = await fetch(`/api/catalog/${region}/narratives`);
+                if (!response.ok) throw new Error('Gagal memuat narasi budaya.');
                 const narratives = await response.json();
                 
                 const list = document.getElementById('narrativeList');
@@ -164,6 +167,7 @@
                 modal.style.display = 'flex';
             } catch (error) {
                 console.error(error);
+                showAppPopup(error.message || 'Gagal memuat narasi budaya.', 'error');
             }
         }
 
